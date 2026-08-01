@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use tokio::net::TcpListener;
 
 // TODO: write an echo server that accepts incoming TCP connections and
@@ -11,7 +12,13 @@ use tokio::net::TcpListener;
 // - `tokio::net::TcpStream::split` to obtain a reader and a writer from the socket
 // - `tokio::io::copy` to copy data from the reader to the writer
 pub async fn echo(listener: TcpListener) -> Result<(), anyhow::Error> {
-    todo!()
+    while let Result::Ok((mut stream, _)) = listener.accept().await {
+        let (mut read, mut write) = stream.split();
+        tokio::io::copy(&mut read, &mut write)
+            .await
+            .expect("TODO: panic message");
+    }
+    Err(anyhow!("did not read yet"))
 }
 
 #[cfg(test)]
